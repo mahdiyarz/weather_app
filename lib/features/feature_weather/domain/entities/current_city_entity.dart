@@ -9,7 +9,7 @@ class CurrentCityEntity extends Equatable {
   final Main? main;
   final int? visibility;
   final Wind? wind;
-  final Rain? rain;
+
   final Clouds? clouds;
   final int? dt;
   final Sys? sys;
@@ -25,7 +25,6 @@ class CurrentCityEntity extends Equatable {
       this.main,
       this.visibility,
       this.wind,
-      this.rain,
       this.clouds,
       this.dt,
       this.sys,
@@ -42,7 +41,6 @@ class CurrentCityEntity extends Equatable {
         main,
         visibility,
         wind,
-        rain,
         clouds,
         dt,
         sys,

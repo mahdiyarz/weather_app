@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:weather_app/core/utils/constants.dart';
 
 class ApiProvider {
@@ -10,10 +11,9 @@ class ApiProvider {
         .get('${Constants.baseUrl}/data/2.5/weather', queryParameters: {
       'q': cityName,
       'appid': Constants.apiKeys,
-      'units': 'metric',
     });
-
-    print(response.data);
+    debugPrint(response.statusCode.toString());
+    debugPrint(response.data.toString());
     return response;
   }
 }
