@@ -14,3 +14,10 @@ class LoadCwEvent extends HomeEvent {
 
   const LoadCwEvent(this.cityName);
 }
+
+@immutable
+class LoadFwEvent extends HomeEvent {
+  final ForecastParams forecastParams;
+
+  const LoadFwEvent(this.forecastParams);
+}

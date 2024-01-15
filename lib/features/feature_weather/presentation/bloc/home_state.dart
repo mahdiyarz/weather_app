@@ -2,11 +2,19 @@ part of 'home_bloc.dart';
 
 class HomeState {
   CwStatus cwStatus;
-  HomeState({required this.cwStatus});
+  FwStatus fwStatus;
+  HomeState({
+    required this.cwStatus,
+    required this.fwStatus,
+  });
 
-  HomeState copyWith(CwStatus? newCwStatus) {
+  HomeState copyWith({
+    CwStatus? newCwStatus,
+    FwStatus? newFwStatus,
+  }) {
     return HomeState(
       cwStatus: newCwStatus ?? cwStatus,
+      fwStatus: newFwStatus ?? fwStatus,
     );
   }
 }
