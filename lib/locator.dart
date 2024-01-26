@@ -6,10 +6,16 @@ import 'package:weather_app/features/feature_weather/domain/usecases/get_current
 import 'package:weather_app/features/feature_weather/domain/usecases/get_forecast_weather_usecase.dart';
 import 'package:weather_app/features/feature_weather/presentation/bloc/home_bloc.dart';
 
+import 'features/feature_bookmark/data/data_source/local/database.dart';
+
 GetIt locator = GetIt.instance;
 
-setup() {
+setup() async {
   locator.registerSingleton<ApiProvider>(ApiProvider());
+
+  final database =
+      await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  locator.registerSingleton<AppDatabase>(database);
 
   /// repositories
   locator.registerSingleton<WeatherRepository>(
