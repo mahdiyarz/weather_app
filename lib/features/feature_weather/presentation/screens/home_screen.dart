@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:weather_app/core/params/forecast_params.dart';
 import 'package:weather_app/core/widgets/app_background.dart';
 import 'package:weather_app/core/widgets/dot_loading.dart';
 import 'package:weather_app/features/feature_weather/data/models/forecast_days_model.dart';
 import 'package:weather_app/features/feature_weather/domain/entities/forecast_days_entity.dart';
+import 'package:weather_app/features/feature_weather/domain/usecases/get_suggestion_city_usecase.dart';
 import 'package:weather_app/features/feature_weather/presentation/bloc/fw_status.dart';
 import 'package:weather_app/features/feature_weather/presentation/bloc/home_bloc.dart';
+import 'package:weather_app/locator.dart';
 
 import '../../domain/entities/current_city_entity.dart';
 import '../bloc/cw_status.dart';
@@ -24,6 +27,11 @@ class _HomeScreenState extends State<HomeScreen> {
   String cityName = 'Tehran';
   final PageController _pageController = PageController();
 
+  TextEditingController textEditingController = TextEditingController();
+  GetSuggestionCityUseCase getSuggestionCityUseCase = GetSuggestionCityUseCase(
+    locator(),
+  );
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +46,43 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
         child: Column(
       children: [
+        SizedBox(
+          height: deviceSize.height * .02,
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: deviceSize.width * .03,
+          ),
+          child: TypeAheadField(
+            controller: textEditingController,
+            builder: (context, controller, focusNode) {
+              return TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Enter City Name...',
+                    hintStyle: TextStyle(color: Colors.white),
+                    labelStyle: TextStyle(color: Colors.white),
+                  ));
+            },
+            itemBuilder: (context, value) {
+              return ListTile(
+                leading: const Icon(Icons.location_on),
+                title: Text(value.name!),
+                subtitle: Text('${value.region}, ${value.country}'),
+              );
+            },
+            onSelected: (value) {
+              textEditingController.text = value.name!;
+              BlocProvider.of<HomeBloc>(context).add(LoadCwEvent(value.name!));
+            },
+            suggestionsCallback: (search) {
+              return getSuggestionCityUseCase(search);
+            },
+          ),
+        ),
         BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) {
             /// rebuild just when CwStatus changed

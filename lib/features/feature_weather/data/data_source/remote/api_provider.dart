@@ -34,4 +34,18 @@ class ApiProvider {
     debugPrint(response.data.toString());
     return response;
   }
+
+  //* city name suggestion api
+  Future<dynamic> sendRequestCitySuggestion(String prefix) async {
+    var response = await _dio.get(
+        'http://geodb-free-service.wirefreethought.com/v1/geo/cities',
+        queryParameters: {
+          'limit': 5,
+          'offset': 2,
+          'namePrefix': prefix,
+        });
+    debugPrint(response.statusCode.toString());
+    debugPrint(response.data.toString());
+    return response;
+  }
 }
