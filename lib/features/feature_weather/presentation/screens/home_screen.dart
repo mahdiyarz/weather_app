@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 15),
                     child: SizedBox(
-                      height: 100,
+                      height: 105,
                       width: deviceSize.width,
                       child: Center(
                         child: BlocBuilder<HomeBloc, HomeState>(
@@ -238,6 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  const Divider(),
                 ],
               ));
             }
