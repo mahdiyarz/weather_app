@@ -6,6 +6,8 @@ import 'core/widgets/main_wrapper.dart';
 import 'locator.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   /// init locator
   await setup();
 

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:weather_app/core/params/forecast_params.dart';
+import 'package:weather_app/core/utils/date_converter.dart';
 import 'package:weather_app/core/widgets/app_background.dart';
 import 'package:weather_app/core/widgets/dot_loading.dart';
 import 'package:weather_app/features/feature_weather/data/models/forecast_days_model.dart';
@@ -101,17 +102,27 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
             if (state.cwStatus is CwCompleted) {
+              /// cast
               final CwCompleted cwCompleted = state.cwStatus as CwCompleted;
               final CurrentCityEntity cityEntity =
                   cwCompleted.currentCityEntity;
 
+              /// create params for api call
               final ForecastParams forecastParams = ForecastParams(
                 lat: cityEntity.coord!.lat!,
                 lon: cityEntity.coord!.lon!,
               );
 
+              /// start load FW event
               BlocProvider.of<HomeBloc>(context)
                   .add(LoadFwEvent(forecastParams));
+
+              /// change times to Hour --5:55 AM/PM--
+              final sunrise = DateConverter.changeDtToDateTimeHour(
+                  cityEntity.sys!.sunrise, cityEntity.timezone);
+
+              final sunset = DateConverter.changeDtToDateTimeHour(
+                  cityEntity.sys!.sunset, cityEntity.timezone);
 
               return Expanded(
                   child: ListView(
@@ -284,6 +295,125 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const Divider(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            'wind speed',
+                            style: TextStyle(
+                              fontSize: deviceSize.height * .017,
+                              color: Colors.amber,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: Text(
+                              '${cityEntity.wind!.speed} m/s',
+                              style: TextStyle(
+                                fontSize: deviceSize.height * .016,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Container(
+                          color: Colors.white,
+                          width: 2,
+                          height: 30,
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            'sunrise',
+                            style: TextStyle(
+                              fontSize: deviceSize.height * .017,
+                              color: Colors.amber,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: Text(
+                              sunrise,
+                              style: TextStyle(
+                                fontSize: deviceSize.height * .016,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Container(
+                          color: Colors.white,
+                          width: 2,
+                          height: 30,
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            'sunset',
+                            style: TextStyle(
+                              fontSize: deviceSize.height * .017,
+                              color: Colors.amber,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: Text(
+                              sunset,
+                              style: TextStyle(
+                                fontSize: deviceSize.height * .016,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Container(
+                          color: Colors.white,
+                          width: 2,
+                          height: 30,
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            'humidity',
+                            style: TextStyle(
+                              fontSize: deviceSize.height * .017,
+                              color: Colors.amber,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: Text(
+                              '${cityEntity.main!.humidity}%',
+                              style: TextStyle(
+                                fontSize: deviceSize.height * .016,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                 ],
               ));
             }
