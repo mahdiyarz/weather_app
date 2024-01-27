@@ -9,7 +9,7 @@ class BottomNav extends StatelessWidget {
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
       notchMargin: 5,
-      color: Theme.of(context).primaryColor,
+      color: Colors.blueGrey.shade400,
       child: SizedBox(
         height: 30,
         child: Row(
