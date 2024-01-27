@@ -6,11 +6,13 @@ import 'package:weather_app/core/params/forecast_params.dart';
 import 'package:weather_app/core/utils/date_converter.dart';
 import 'package:weather_app/core/widgets/app_background.dart';
 import 'package:weather_app/core/widgets/dot_loading.dart';
+import 'package:weather_app/features/feature_bookmark/presentation/bloc/bookmark_bloc.dart';
 import 'package:weather_app/features/feature_weather/data/models/forecast_days_model.dart';
 import 'package:weather_app/features/feature_weather/domain/entities/forecast_days_entity.dart';
 import 'package:weather_app/features/feature_weather/domain/usecases/get_suggestion_city_usecase.dart';
 import 'package:weather_app/features/feature_weather/presentation/bloc/fw_status.dart';
 import 'package:weather_app/features/feature_weather/presentation/bloc/home_bloc.dart';
+import 'package:weather_app/features/feature_weather/presentation/widgets/bookmark_icon.dart';
 import 'package:weather_app/locator.dart';
 
 import '../../domain/entities/current_city_entity.dart';
@@ -54,34 +56,83 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.symmetric(
             horizontal: deviceSize.width * .03,
           ),
-          child: TypeAheadField(
-            controller: textEditingController,
-            builder: (context, controller, focusNode) {
-              return TextField(
-                  controller: controller,
-                  focusNode: focusNode,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter City Name...',
-                    hintStyle: TextStyle(color: Colors.white),
-                    labelStyle: TextStyle(color: Colors.white),
-                  ));
-            },
-            itemBuilder: (context, value) {
-              return ListTile(
-                leading: const Icon(Icons.location_on),
-                title: Text(value.name!),
-                subtitle: Text('${value.region}, ${value.country}'),
-              );
-            },
-            onSelected: (value) {
-              textEditingController.text = value.name!;
-              BlocProvider.of<HomeBloc>(context).add(LoadCwEvent(value.name!));
-            },
-            suggestionsCallback: (search) {
-              return getSuggestionCityUseCase(search);
-            },
+          child: Row(
+            children: [
+              Expanded(
+                child: TypeAheadField(
+                  controller: textEditingController,
+                  builder: (context, controller, focusNode) {
+                    return TextField(
+                        controller: controller,
+                        focusNode: focusNode,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter City Name...',
+                          hintStyle: TextStyle(color: Colors.white),
+                          labelStyle: TextStyle(color: Colors.white),
+                        ));
+                  },
+                  itemBuilder: (context, value) {
+                    return ListTile(
+                      leading: const Icon(Icons.location_on),
+                      title: Text(value.name!),
+                      subtitle: Text('${value.region}, ${value.country}'),
+                    );
+                  },
+                  onSelected: (value) {
+                    textEditingController.text = value.name!;
+                    BlocProvider.of<HomeBloc>(context)
+                        .add(LoadCwEvent(value.name!));
+                  },
+                  suggestionsCallback: (search) {
+                    return getSuggestionCityUseCase(search);
+                  },
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              BlocBuilder<HomeBloc, HomeState>(
+                buildWhen: (previous, current) {
+                  if (previous.cwStatus == current.cwStatus) {
+                    return false;
+                  }
+                  return true;
+                },
+                builder: (context, state) {
+                  // show loading state for CW
+                  if (state.cwStatus is CwLoading) {
+                    return const CircularProgressIndicator();
+                  }
+
+                  // show Error state for CW
+                  if (state.cwStatus is CwError) {
+                    return IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.error,
+                          color: Colors.white,
+                          size: 35,
+                        ));
+                  }
+
+                  if (state.cwStatus is CwCompleted) {
+                    final CwCompleted cwCompleted =
+                        state.cwStatus as CwCompleted;
+
+                    BlocProvider.of<BookmarkBloc>(context).add(
+                        GetCityByNameEvent(
+                            cwCompleted.currentCityEntity.name!));
+
+                    return BookmarkIcon(
+                        cityName: cwCompleted.currentCityEntity.name!);
+                  }
+
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
           ),
         ),
         BlocBuilder<HomeBloc, HomeState>(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weather_app/features/feature_bookmark/presentation/bloc/bookmark_bloc.dart';
 import 'package:weather_app/features/feature_weather/presentation/bloc/home_bloc.dart';
 
 import 'core/widgets/main_wrapper.dart';
@@ -26,6 +27,11 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create: (_) {
               return locator<HomeBloc>();
+            },
+          ),
+          BlocProvider(
+            create: (_) {
+              return locator<BookmarkBloc>();
             },
           )
         ],
